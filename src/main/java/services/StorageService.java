@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface StorageService
 {
-    void add(String personName, String phone);
+    void add(String personName, String phone, String adress);
 
     List<Person> list();
 

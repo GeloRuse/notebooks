@@ -77,7 +77,7 @@ public class DBModule extends AbstractModule
          * @see https://docs.jboss.org/hibernate/orm/4.3/devguide/en-US/html_single/#d5e5095
          * for more details
          */
-        props.put("hibernate.hbm2ddl.auto",             "update");
+        props.put("hibernate.hbm2ddl.auto",             "validate");
 
         return Persistence.createEntityManagerFactory("db-manager", props);
 

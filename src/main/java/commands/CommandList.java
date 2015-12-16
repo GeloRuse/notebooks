@@ -1,6 +1,7 @@
 package commands;
 
 import controllers.ApplicationContext;
+import model.Adress;
 import model.Person;
 import model.Phone;
 import services.StorageService;
@@ -29,7 +30,6 @@ public class CommandList extends AbstractCommand
 
         for (Person p : persons)
             printPerson(p);
-
     }
 
     private void printPerson(Person person)
@@ -38,6 +38,9 @@ public class CommandList extends AbstractCommand
         sb.append("Person: ").append(person.getName()).append("\n").append("phones: ");
         for (Phone phone : person.getPhones())
             sb.append(phone.getPhone()).append("\n");
+        sb.append("adresses: ");
+        for(Adress adress: person.getAdresses())
+            sb.append(adress.getAdress()).append("\n");
 
         System.out.println(sb.toString());
     }

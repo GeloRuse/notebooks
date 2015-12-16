@@ -2,6 +2,7 @@ package services;
 
 import com.google.inject.Singleton;
 import configs.DBConnection;
+import model.Adress;
 import model.Book;
 import model.Person;
 import model.Phone;
@@ -21,9 +22,9 @@ import java.util.List;
 public class JDBCStorageService implements StorageService
 {
     @Override
-    public void add(String personName, String phone)
+    public void add(String personName, String phone, String adress)
     {
-        TransactionScript.getInstance().addPerson(personName, phone, defaultBook());
+        TransactionScript.getInstance().addPerson(personName, phone, adress, defaultBook());
     }
 
     @Override
@@ -82,17 +83,20 @@ public class JDBCStorageService implements StorageService
             try
             {
                 PreparedStatement statement = connection.prepareStatement(
-                        "select name, phone from book b \n" +
+                        "select name, phone, adress from book b \n" +
                         "inner join person p on b.id = p.book_id \n" +
-                        "inner join phone ph on p.id = ph.person_id\n");
+                        "inner join phone ph on p.id = ph.person_id\n" +
+                        "inner join adress adr on p.id = adr.person_id\n");
 
                 ResultSet r_set = statement.executeQuery();
 
                 while (r_set.next())
                 {
-                    Person p = new Person(r_set.getString("name"));
-                    Phone ph = new Phone(p, r_set.getString("phone"));
+                    Person p   = new Person(r_set.getString("name"));
+                    Phone ph   = new Phone(p, r_set.getString("phone"));
+                    Adress adr = new Adress(p, r_set.getString("adress"));
                     p.getPhones().add(ph);
+                    p.getAdresses().add(adr);
                     result.add(p);
                 }
 
@@ -104,7 +108,7 @@ public class JDBCStorageService implements StorageService
             return result;
         }
 
-        public void addPerson(String person, String phone, Book book)
+        public void addPerson(String person, String phone, String adress, Book book)
         {
             try
             {
@@ -120,6 +124,7 @@ public class JDBCStorageService implements StorageService
 
                 PreparedStatement addPerson = connection.prepareStatement("insert into person (book_id, name) values (?, ?)", Statement.RETURN_GENERATED_KEYS);
                 PreparedStatement addPhone  = connection.prepareStatement("insert into phone (person_id, phone) values (?, ?)", Statement.RETURN_GENERATED_KEYS);
+                PreparedStatement addAdress = connection.prepareStatement("insert into adress (person_id, adress) values (?, ?)", Statement.RETURN_GENERATED_KEYS);
 
                 addPerson.setLong(1, book.getId());
                 addPerson.setString (2, person);
@@ -133,6 +138,9 @@ public class JDBCStorageService implements StorageService
                     addPhone.setInt(1, id);
                     addPhone.setString(2, phone);
                     addPhone.execute();
+                    addAdress.setInt(1,id);
+                    addAdress.setString(2, adress);
+                    addAdress.execute();
                 }
 
 

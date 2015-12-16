@@ -2,6 +2,7 @@ package services;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import model.Adress;
 import model.Book;
 import model.Person;
 import model.Phone;
@@ -24,16 +25,19 @@ public class HibernateStorageService implements StorageService
     }
 
     @Override
-    public void add(String personName, String phone)
+    public void add(String personName, String phone, String adress)
     {
         Book   book   = defaultBook();
         Person person = new Person(personName);
         Phone  ph     = new Phone(person, phone);
+        Adress adr    = new Adress(person, adress);
         person.getPhones().add(ph);
+        person.getAdresses().add(adr);
 
         book.getPersons().add(person);
 
         manager.getTransaction().begin();
+        manager.persist(adr);
         manager.persist(ph);
         manager.persist(person);
         manager.persist(book);
